@@ -1,18 +1,14 @@
 
-static void         start_send( t_client *this );
-static void         stop_send( t_client *this );
-static void         show_send( t_client *this, char *spec );
-static void         select_send( t_client *this, char *spec );
-
 static inline void         con_printf(const char *mess)
 {
     printf("\033[36msniff_client:> \033[0m%s", mess);
 }
 
-static void         start_send( t_client *this )
+static void         send_start( t_client *this, char *spec )
 {
     unsigned char   act;
 
+    TRASH_IN_LINE
     con_printf("Sending start request\n");
     act = START;
     write(this->out_chan, &act, sizeof(unsigned char));
@@ -24,11 +20,11 @@ static void         start_send( t_client *this )
         con_printf("Error! Check errors.txt\n");
 }
 
-static void         stop_send( t_client *this )
+static void         send_stop( t_client *this, char *spec )
 {
     unsigned char act;
 
-
+    TRASH_IN_LINE
     con_printf("Sending stop request\n");
     act = STOP;
     write(this->out_chan, &act, sizeof(unsigned char));
@@ -40,7 +36,7 @@ static void         stop_send( t_client *this )
         con_printf("Error! Check errors.txt\n");
 }
 
-static void         show_send( t_client *this, char *spec )
+static void         send_show( t_client *this, char *spec )
 {
     unsigned long int   packages = 0;
     struct in_addr      addres;
@@ -63,7 +59,7 @@ static void         show_send( t_client *this, char *spec )
         con_printf("Error! Check errors.txt\n");
 }
 
-static void         select_send( t_client *this, char * spec )
+static void         send_select( t_client *this, char * spec )
 {
     unsigned char   device[IFNAMSIZ];
     unsigned char   act;
@@ -82,4 +78,32 @@ static void         select_send( t_client *this, char * spec )
         con_printf("Success!\n");
     else
         con_printf("Error! Check errors.txt\n");
+}
+
+static void         send_stat(t_client *this, char *spec)
+{
+    (void)this;
+    (void)spec;
+    con_printf("404 stat\n");
+}
+
+static void         send_die(t_client *this, char *spec )
+{
+    TRASH_IN_LINE
+    (void)this;
+    con_printf("404 die\n");
+}
+
+static void         show_help(t_client *this, char *spec)
+{
+    TRASH_IN_LINE
+    (void)this;
+    con_printf("404 help\n");
+}
+
+static void         make_exit(t_client *this, char *spec)
+{
+    TRASH_IN_LINE
+    (void)this;
+    con_printf("404 exit\n");
 }

@@ -39,7 +39,9 @@ enum MES
     SHOW,
     SELECT,
     STAT,
-    DIE 
+    DIE,
+    HELP, //only for client
+    EXIT 
 };
 
 void            fatal_err_stdin(const char *err, char is_errno);

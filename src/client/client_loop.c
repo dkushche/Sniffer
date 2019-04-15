@@ -1,7 +1,6 @@
 
 #include "interaction_with_daemon.c"
 
-static void         send_mess(int id, char *spec, t_client *client);
 static void         client_loop(void);
 static void         parse_input(char *input, t_client *client);
 
@@ -30,64 +29,26 @@ static void         client_loop( void )
 
 static void         parse_input(char *input, t_client *client)
 {
+    const char      *keys[EXIT + 1] = { "start", "stop", "show",
+                                        "select_iface", "stat",
+                                        "die", "--help", "exit" };
+    react_on_inp    answer[EXIT + 1] = {    &send_start, &send_stop, &send_show,
+                                            &send_select, &send_stat, &send_die,
+                                            &show_help, &make_exit };
     char            *token;
     char            *new_l;
+    int             i = -1;
 
     new_l = strchr(input, '\n');
     *new_l = '\0';
     token = strtok(input, " ");
-    if (!strcmp(token, "start") && !strtok(NULL, " "))
-    { send_mess(START, NULL, client); }
-    else if (!strcmp(token, "stop") && !strtok(NULL, " "))
-    { send_mess(STOP, NULL, client); }
-    else if (!strcmp(token, "--help") && !strtok(NULL, " "))
-    { con_printf(USAGE);}
-    else if (!strcmp(token, "show"))
+    while (++i < (EXIT + 1))
     {
-        token = strtok(NULL, " ");
-        if (token)
-            send_mess(SHOW, token, client);
-        else
-            {con_printf("Need ip to show\n");}
+        if (!strcmp(token, keys[i]))
+        {
+            answer[i](client, strtok(NULL, " "));
+            return ;
+        }
     }
-    else if (!strcmp(token, "select_iface"))
-    {
-        token = strtok(NULL, " ");
-        if (token)
-            send_mess(SELECT, token, client);
-        else
-            con_printf("Need iface in seect_iface\n");
-    }
-    else if (!strcmp(token, "stat"))
-    {
-        token = strtok(NULL, " ");
-        if (token)
-            con_printf("Stat\n");
-        else
-            con_printf("write iface after stat\n");
-    }
-    else if (!strcmp(token, "exit"))
-    {
-        con_printf("Good bye\n");
-        exit(1);
-    }
-    else
-        con_printf("Incorrect input\n");
+    con_printf("Incorrect input\n");
 }
-
-static void         send_mess( int id, char *spec, t_client *client )
-{
-    switch(id)
-    {
-        case START :    start_send(client);
-                        break;
-        case STOP :     stop_send(client);
-                        break;
-        case SHOW :     show_send(client, spec);
-                        break;
-        case SELECT :   select_send(client, spec);
-                        break;
-        default :       break;
-    }
-}
-
