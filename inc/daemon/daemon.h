@@ -19,6 +19,8 @@ typedef struct      sniffer
     char            now_device[IFNAMSIZ];    
 }                   t_sniffer;
 
+typedef void (*interact_func)(t_sniffer *this);
+
 void                init_daemon(void);
 
 #endif

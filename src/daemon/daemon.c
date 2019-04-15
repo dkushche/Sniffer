@@ -2,12 +2,12 @@
 #include "daemon.h"
 #include "daemon_filesys.c"
 #include "daemon_sock.c"
+#include "interaction_with_client.c"
 
 static void             chan_interact(t_sniffer *this, char make_block);
 static void             sniff_time( t_sniffer *daemon, unsigned char *buf );
 static void             free_res( void );
 static void             read_chanel( t_sniffer *daemon );
-static void             processing_request(t_sniffer *this, unsigned char cmd);
 
 void                    init_daemon( void )
 {
@@ -57,45 +57,11 @@ static void             read_chanel(t_sniffer *this)
     else if (status > 0)
     {
         chan_interact(this, 1);
-        processing_request(this, cmd);
+        interact_func       functions[DIE + 1] = {&react_start, &react_stop, &react_show,
+                                                &react_select, &react_stat, &react_die};
+
+        functions[cmd](this);
         chan_interact(this, 0);
-    }
-}
-
-static void             processing_request(t_sniffer *this, unsigned char cmd)
-{
-    unsigned char       stat;
-    struct in_addr      buf;
-    unsigned long int   pack;
-    char                device[IFNAMSIZ];
-
-    if (cmd == START)
-    {
-        this->is_working = 1;
-        stat = 1;
-        write(this->out_chan, &stat, sizeof(unsigned char));
-    } else if (cmd == STOP) {
-        this->is_working = 0;
-        stat = 1;
-        write(this->out_chan, &stat, sizeof(unsigned char));
-    } else if (cmd == SHOW) {
-        if (read(this->in_chan, &buf, sizeof(struct in_addr)) < 0)
-        { err_log("Trouble with reading from chanel", this->status, 0); return ;}
-        if (!(pack = searcher(&this->data, buf)))
-            err_log("No packages from this address", this->status, 0);
-        write(this->out_chan, &pack, sizeof(unsigned long int));
-    } else if (cmd == SELECT) {
-        if (read(this->in_chan, device, IFNAMSIZ * sizeof(char)) < 0)
-        { err_log("Trouble with reading from chanel", this->status, 0); return ;}
-        if (bind_to_device(this, device) < 0)
-            stat = 0;
-        else
-            stat = 1;
-        write(this->out_chan, &stat, sizeof(unsigned char));
-    } else {
-        err_log("Incorect client request", this->status, 0);
-        stat = 0;
-        write(this->out_chan, &stat, sizeof(unsigned char));
     }
 }
 

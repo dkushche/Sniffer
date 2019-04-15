@@ -10,8 +10,6 @@ typedef struct
     int     out_chan;
 }           t_client;
 
-# define CL printf("sniff_client:> ")
-
 # define USAGE "usage :\n\t\tstart​ (packets are being sniffed from now from default iface(eth0))\n\
                 stop​ (packets are not sniffed)\n\
                 show [ip] ​(print number of packets received from ip address)\n\

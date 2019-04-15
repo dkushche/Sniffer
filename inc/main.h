@@ -34,7 +34,7 @@
 
 enum MES
 {
-    START = 1,
+    START = 0,
     STOP,
     SHOW,
     SELECT,

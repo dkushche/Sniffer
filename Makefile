@@ -40,7 +40,8 @@ DAEMON_OBJ = $(addprefix $(D_OBJ), $(DAEMON_C:.c=.o))
 
 #CLIENT-------------------------------------------------------------------------
 
-CLIENT_C = $(D_CLIENT)client_main.c $(C_FILES)
+CLIENT_C =	$(D_CLIENT)client_main.c \
+			$(C_FILES)
 
 CLIENT_SRC = $(addprefix $(D_SRC), $(CLIENT_C))
 

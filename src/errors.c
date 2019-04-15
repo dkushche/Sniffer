@@ -4,9 +4,9 @@
 void            fatal_err_stdin(const char *err, char is_errno)
 {
     if (!is_errno)
-        printf("%s error\n", err);
+        printf("Fatal>: %s error\n", err);
     else
-        printf("%s error : errno : %i\n", err, errno);
+        printf("Fatal>:%s error : errno : %i\n", err, errno);
     exit(1);
 }
 

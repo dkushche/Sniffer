@@ -14,13 +14,13 @@ static void         client_loop( void )
     int             code;
 
     fifo_chanel((t_abstract *)&client);
-    CL;
+    con_printf("");
     while ((code = getline(&input, &size, stdin)) > 0)
     {
         parse_input(input, &client);
         free(input);
         input = NULL;
-        CL;
+        con_printf("");
     }
     if (code < 0)
         fatal_err_stdin("Read from stdin", 0);
@@ -41,14 +41,14 @@ static void         parse_input(char *input, t_client *client)
     else if (!strcmp(token, "stop") && !strtok(NULL, " "))
     { send_mess(STOP, NULL, client); }
     else if (!strcmp(token, "--help") && !strtok(NULL, " "))
-    { CL; printf(USAGE);}
+    { con_printf(USAGE);}
     else if (!strcmp(token, "show"))
     {
         token = strtok(NULL, " ");
         if (token)
             send_mess(SHOW, token, client);
         else
-            {CL;printf("Need ip to show\n");}
+            {con_printf("Need ip to show\n");}
     }
     else if (!strcmp(token, "select_iface"))
     {
@@ -56,23 +56,23 @@ static void         parse_input(char *input, t_client *client)
         if (token)
             send_mess(SELECT, token, client);
         else
-            {CL;printf("Need iface in seect_iface\n");}
+            con_printf("Need iface in seect_iface\n");
     }
     else if (!strcmp(token, "stat"))
     {
         token = strtok(NULL, " ");
         if (token)
-            {CL;printf("Stat\n");}
+            con_printf("Stat\n");
         else
-            {CL;printf("write iface after stat\n");}
+            con_printf("write iface after stat\n");
     }
     else if (!strcmp(token, "exit"))
     {
-        CL;printf("Good bye\n");
+        con_printf("Good bye\n");
         exit(1);
     }
     else
-    { CL;printf("Incorrect input\n"); }
+        con_printf("Incorrect input\n");
 }
 
 static void         send_mess( int id, char *spec, t_client *client )
