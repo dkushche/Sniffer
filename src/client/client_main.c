@@ -7,15 +7,6 @@ static void         animate_daemon( void );
 
 int                 main( void )
 {
-    int             out_chan;
-    int             in_chan;
-
-    out_chan = mkfifo(FIFO_CL_DAE_CHAN, 777);
-    if (out_chan < 0 && errno != EEXIST)
-        fatal_err_stdin("Creating FIFO", 1);
-    in_chan = mkfifo(FIFO_DAE_CL_CHAN, 777);
-    if (in_chan < 0 && errno != EEXIST)
-        fatal_err_stdin("Creating FIFO", 1);
     if (check_sniffer()) {
         printf("Connecting with daemon\n");
         client_loop();
@@ -33,7 +24,7 @@ static void         animate_daemon( void )
     pid = fork();
     switch(pid)
     {
-        case 0 :    demonize();
+        case 0 :    init_daemon();
                     break;
         case -1 :   printf("Fork Error\n");
                     break;

@@ -35,14 +35,24 @@
 enum MES
 {
     START = 1,
-    STOP = 2,
-    SHOW = 3,
-    SELECT = 4
+    STOP,
+    SHOW,
+    SELECT,
+    STAT,
+    DIE 
 };
 
 void            fatal_err_stdin(const char *err, char is_errno);
 void		    err_log( const char *err, int status_fd, char fatal );
 
-void            demonize( void ); //?
+void            init_daemon( void );
+
+typedef struct  abstract
+{
+    int         first_chan;
+    int         second_chan;
+}               t_abstract;
+
+void            fifo_chanel(t_abstract *abstr);
 
 #endif

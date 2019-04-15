@@ -27,7 +27,9 @@ HEAD_FILES =	main.h \
 
 C_FILES =		$(D_DAEMON)daemon.c \
 				$(D_DAEMON)ip_vector.c \
-				errors.c
+				errors.c \
+				fifo_chanel.c
+
 #DAEMON-------------------------------------------------------------------------
 
 DAEMON_C = $(D_DAEMON)daemon_main.c $(C_FILES)

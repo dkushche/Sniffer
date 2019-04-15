@@ -7,18 +7,18 @@
 
 # define LOGS   "errors.txt"
 
-typedef struct  sniffer
+typedef struct      sniffer
 {
+    int             out_chan;
+    int             in_chan;
     int             sock_raw;
     t_ip_vector     data;
     int             file;
     int             status;
-    int             in_chan;
-    int             out_chan;
     unsigned char   is_working;
     char            now_device[IFNAMSIZ];    
-}               t_sniffer;
+}                   t_sniffer;
 
-void            init_daemon(void);
+void                init_daemon(void);
 
 #endif

@@ -3,9 +3,9 @@
 #include "daemon_filesys.c"
 #include "daemon_sock.c"
 
+static void             chan_interact(t_sniffer *this, char make_block);
 static void             sniff_time( t_sniffer *daemon, unsigned char *buf );
 static void             free_res( void );
-static void             gen_fifo( t_sniffer *this );
 static void             read_chanel( t_sniffer *daemon );
 static void             processing_request(t_sniffer *this, unsigned char cmd);
 
@@ -23,7 +23,8 @@ void                    init_daemon( void )
 	if (bind_to_device(&daemon, DEFAULT) < 0)
 		bind_to_device(&daemon, MY);
     make_promiscious(daemon.sock_raw, daemon.status);
-    gen_fifo(&daemon);
+    fifo_chanel((t_abstract *)&daemon);
+    chan_interact(&daemon, 0);
     daemon.is_working = 1;
 
     buf = (unsigned char *)malloc(sizeof(unsigned char) * BUFF_SIZE);
@@ -55,12 +56,9 @@ static void             read_chanel(t_sniffer *this)
         err_log("Reading from chanel", this->status, 1);
     else if (status > 0)
     {
-        int saved_flags = fcntl(this->in_chan, F_GETFL);
-
-        fcntl(this->in_chan, F_SETFL, saved_flags & ~O_NONBLOCK);
+        chan_interact(this, 1);
         processing_request(this, cmd);
-        saved_flags = fcntl(this->in_chan, F_GETFL, 0);
-        fcntl(this->in_chan, F_SETFL, saved_flags | O_NONBLOCK);
+        chan_interact(this, 0);
     }
 }
 
@@ -101,24 +99,6 @@ static void             processing_request(t_sniffer *this, unsigned char cmd)
     }
 }
 
-static void             gen_fifo(t_sniffer *this)
-{
-    int         fifo;
-
-    fifo = mkfifo(FIFO_CL_DAE_CHAN, 777);
-    if (fifo < 0 && errno != EEXIST)
-        err_log("Creating FIFO", this->status, 1);
-    fifo = mkfifo(FIFO_DAE_CL_CHAN, 777);
-    if (fifo < 0 && errno != EEXIST)
-        err_log("Creating FIFO", this->status, 1);
-    this->out_chan = open(FIFO_DAE_CL_CHAN, O_RDWR);
-    this->in_chan = open(FIFO_CL_DAE_CHAN, O_RDWR);
-    if (this->in_chan < 0 || this->out_chan < 0)
-        err_log("Opening chanels", this->status, 1);
-    int flags = fcntl(this->in_chan, F_GETFL, 0);
-    fcntl(this->in_chan, F_SETFL, flags | O_NONBLOCK);
-}
-
 static void             sniff_time( t_sniffer *daemon, unsigned char *buf )
 {
     struct sockaddr     saddr;
@@ -138,6 +118,16 @@ static void             sniff_time( t_sniffer *daemon, unsigned char *buf )
     dump(&daemon->data, daemon->file, daemon->status);
 }
 
+static void             chan_interact( t_sniffer *this, char make_block )
+{
+    int flags = fcntl(this->in_chan, F_GETFL, 0);
+
+    if (make_block)
+        fcntl(this->in_chan, F_SETFL, flags & ~O_NONBLOCK);
+    else
+        fcntl(this->in_chan, F_SETFL, flags | O_NONBLOCK);
+}
+
 static void             free_res( void )
 {
     setsid();
@@ -145,24 +135,6 @@ static void             free_res( void )
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
-}
-
-void                demonize(void)
-{
-    int             pid;
-
     signal(SIGCHLD, SIG_IGN);
     signal(SIGHUP, SIG_IGN);
-    pid = fork();
-
-    switch(pid)
-    {
-        case 0 :    init_daemon();
-                    break;
-        case -1 :   printf("Fork Error\n");
-                    break;
-        default :   exit(1);
-                    break;
-    }
 }
-
