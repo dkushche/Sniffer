@@ -11,6 +11,7 @@ static void         push_new_in_pos(t_ip_vector *this, int status_fd,
                             unsigned int pos, struct in_addr new_ip);
 static void         binary_search(t_ip_vector *this,
                             int status_fd, struct in_addr new_ip);
+static char         algorithm(t_ip_vector *this, struct in_addr ip, unsigned int *now);
 
 t_ip_vector         *create_vector(t_ip_vector *in_stack)
 {
@@ -59,54 +60,57 @@ void                destroy_vector(t_ip_vector *vector, char in_stack)
         free(vector);
 }
 
-static void         binary_search(t_ip_vector *this,
-                                int status_fd, struct in_addr new_ip)
+static char         algorithm(t_ip_vector *this, struct in_addr ip, unsigned int *now)
 {
     unsigned int    start = 0;
     unsigned int    end = this->size - 1;
-    unsigned int    now;
 
     while (1)
     {
-        now = (start + end) >> 1;
-        if (new_ip.s_addr == this->array[now].ip.s_addr)
-        {
-            this->array[now].n_of_pack++;
-            break;
-        }
+        *now = (start + end) >> 1;
+        if (ip.s_addr == this->array[*now].ip.s_addr)
+            return 1;
         if (start == end || start > end)
         {
-            if (new_ip.s_addr > this->array[now].ip.s_addr)
-                push_new_in_pos(this, status_fd, now + 1, new_ip);
+            if (ip.s_addr > this->array[*now].ip.s_addr)
+            {
+                (*now)++;
+                return 0;
+            }
             else
-                push_new_in_pos(this, status_fd, now, new_ip);
-            break;
+                return 0;
         }
-        if (new_ip.s_addr > this->array[now].ip.s_addr)
-            start = now + 1;
+        if (ip.s_addr > this->array[*now].ip.s_addr)
+            start = *now + 1;
         else
-            end = (now) ? (now - 1) : 0;
+            end = (*now) ? (*now - 1) : 0;
     }
+}
+
+static void         binary_search(t_ip_vector *this,
+                                int status_fd, struct in_addr new_ip)
+{
+    char            status;
+    unsigned int    now;
+
+    status = algorithm(this, new_ip, &now);
+    if (status)
+        this->array[now].n_of_pack++;
+    else
+        push_new_in_pos(this, status_fd, now, new_ip);
 }
 
 unsigned long int    searcher(t_ip_vector *this,
                                         struct in_addr who)
 {
-    unsigned int    start = 0;
-    unsigned int    end = this->size - 1;
+    char            status;
     unsigned int    now;
 
-    while (1) {
-        now = (start + end) >> 1;
-        if (who.s_addr == this->array[now].ip.s_addr)
-            return this->array[now].n_of_pack;
-        if (start == end || start > end)
-            return 0;
-        if (who.s_addr > this->array[now].ip.s_addr)
-            start = now + 1;
-        else
-            end = (now) ? (now - 1) : 0;
-    }
+    status = algorithm(this, who, &now);
+    if (status)
+        return this->array[now].n_of_pack;
+    else
+        return 0;
 }
 
 static void         reallocate(t_ip_vector *this, int status_fd)
