@@ -1,5 +1,4 @@
 
-static void         client_fatal_err(const char *err);
 static void         send_mess(int id, char *spec, t_client *client);
 static void         client_proccesing(char *spec);
 static void         client_loop(void);
@@ -19,10 +18,10 @@ static void         client_loop( void )
     CL;
     client.out_chan = open(FIFO_CL_DAE_CHAN, O_RDWR);
     if (client.out_chan < 0)
-        client_fatal_err("Opening FIFO CL->DAE use sudo");
+        fatal_err_stdin("Opening FIFO CL->DAE use sudo", 0);
     client.in_chan = open(FIFO_DAE_CL_CHAN, O_RDWR);
     if (client.in_chan < 0)
-        client_fatal_err("Opening FIFO DAE<-CL use sudo");
+        fatal_err_stdin("Opening FIFO DAE<-CL use sudo", 0);
     while ((code = getline(&input, &size, stdin)) > 0)
     {
         parse_input(input, &client);
@@ -31,7 +30,7 @@ static void         client_loop( void )
         CL;
     }
     if (code < 0)
-        client_fatal_err("Read from stdin");
+        fatal_err_stdin("Read from stdin", 0);
     close(client.in_chan);
     close(client.out_chan);
 }
@@ -107,7 +106,7 @@ static void         start_send( t_client *this )
     act = START;
     write(this->out_chan, &act, sizeof(unsigned char));
     if (read(this->in_chan, &act, sizeof(unsigned char)) < 0)
-        {CL;printf("Fatal error can't read"); exit(1);}
+        {CL;fatal_err_stdin("Fatal error can't read", 0);}
     if (act)
         {CL;printf("Success!\n");}
     else
@@ -123,7 +122,7 @@ static void         stop_send( t_client *this )
     act = STOP;
     write(this->out_chan, &act, sizeof(unsigned char));
     if (read(this->in_chan, &act, sizeof(unsigned char)) < 0)
-        {CL;printf("Fatal error can't read"); exit(1);}
+        {CL;fatal_err_stdin("Fatal error can't read", 0);}
     if (act)
         {CL;printf("Success!\n");}
     else
@@ -143,7 +142,7 @@ static void         show_send( t_client *this, char *spec )
         {CL;printf("Incorrect IP address\n"); return;}
     write(this->out_chan, &addres, sizeof(struct in_addr));
     if (read(this->in_chan, &packages, sizeof(unsigned long int)) < 0)
-        {CL;printf("Fatal error can't read"); exit(1);}
+        {CL;fatal_err_stdin("Fatal error can't read", 0);}
     if (packages)
         {CL;printf("IP : %s ; packages : %lu\n", spec, packages);}
     else
@@ -164,7 +163,7 @@ static void         select_send( t_client *this, char * spec )
     device[strlen(spec)] = '\0';
     write(this->out_chan, device, IFNAMSIZ * sizeof(char));
     if (read(this->in_chan, &act, sizeof(unsigned char)) < 0)
-        {CL;printf("Fatal error can't read"); exit(1);}
+        {CL;fatal_err_stdin("Fatal error can't read", 0);}
     if (act)
         {CL;printf("Success!\n");}
     else

@@ -1,5 +1,5 @@
 
-#include "daemon_main.h"
+#include "main.h"
 #include "daemon.h"
 
 int					main()

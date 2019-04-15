@@ -2,7 +2,7 @@
 #ifndef DAEMON_H
 # define DAEMON_H
 
-#include "daemon_main.h"
+#include "main.h"
 #include "ip_vector.h"
 
 # define LOGS   "errors.txt"

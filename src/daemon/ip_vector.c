@@ -11,7 +11,6 @@ static void         push_new_in_pos(t_ip_vector *this, int status_fd,
                             unsigned int pos, struct in_addr new_ip);
 static void         binary_search(t_ip_vector *this,
                             int status_fd, struct in_addr new_ip);
-static void         vector_err(const char *err, int status_fd);
 
 t_ip_vector         *create_vector(t_ip_vector *in_stack)
 {
@@ -41,7 +40,7 @@ void                dump(t_ip_vector *this, int fd, int status_fd)
         dprintf(fd, "IP : %s ; packages : %lu \n",
                 inet_ntoa(this->array[i].ip), this->array[i].n_of_pack);
         if (buf > this->array[i].ip.s_addr)
-            vector_err("Sort Error", status_fd);
+            err_log("Sort Error", status_fd, 1);
         buf = this->array[i].ip.s_addr;
     }
 }
@@ -118,7 +117,7 @@ static void         reallocate(t_ip_vector *this, int status_fd)
                            this->fiz_size * sizeof(t_elem) << 1);
 
     if (buf == NULL)
-        vector_err("Can't realloc enough memory", status_fd);
+        err_log("Can't realloc enough memory", status_fd, 1);
 
     this->array = buf;
     this->fiz_size <<= 1;
@@ -159,23 +158,6 @@ static void         push_new_in_pos(t_ip_vector *this, int status_fd,
         with_shifts(this, status_fd, pos, new_ip);
     else
         without_shifts(this, status_fd, pos, new_ip);
-}
-
-
-static void         vector_err(const char *err, int status_fd)
-{
-
-    time_t timer;
-    char buffer[26];
-    struct tm* tm_info;
-
-    time(&timer);
-    tm_info = localtime(&timer);
-
-    strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
-
-    dprintf(status_fd, "%s daemon_error>%s\n", buffer, err);
-	exit(1);
 }
 
 void                restart(t_ip_vector *this)

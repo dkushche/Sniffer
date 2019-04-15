@@ -40,6 +40,9 @@ enum MES
     SELECT = 4
 };
 
-void            demonize( void );
+void            fatal_err_stdin(const char *err, char is_errno);
+void		    err_log( const char *err, int status_fd, char fatal );
+
+void            demonize( void ); //?
 
 #endif

@@ -20,13 +20,14 @@ D_CLIENT = client/
 
 #--------------FILES------------------------------------------------------------
 
-HEAD_FILES =	$(D_DAEMON)daemon_main.h \
+HEAD_FILES =	main.h \
 				$(D_DAEMON)daemon.h \
 				$(D_DAEMON)ip_vector.h \
-				$(D_CLIENT)client_main.h
+				$(D_CLIENT)client.h
 
 C_FILES =		$(D_DAEMON)daemon.c \
-				$(D_DAEMON)ip_vector.c
+				$(D_DAEMON)ip_vector.c \
+				errors.c
 #DAEMON-------------------------------------------------------------------------
 
 DAEMON_C = $(D_DAEMON)daemon_main.c $(C_FILES)
@@ -84,6 +85,15 @@ $(D_OBJ):
 $(D_OBJ)%.o: $(D_SRC)%.c $(HEADERS)
 	@$(CC) $(CFLAGS) -c $(INC) $< -o $@
 	@printf "$(C_CYAN)%-10s$(C_NONE)%-40s$(C_GREEN)[done]$(C_NONE)\n" $(NAME): $@
+
+clean_logs:
+	@rm -rf .conn_layer_cl_dae
+	@rm -rf .conn_layer_dae_cl
+	@rm -rf .daemon_pid
+	@rm -rf .*reboot
+	@rm -rf errors.txt
+	@rm -rf .vscode
+	@printf "$(C_CYAN)$(NAME):$(C_GREEN)<TMP was cleaned>\n"
 
 clean:
 	@rm -rf $(D_OBJ)
