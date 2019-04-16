@@ -16,7 +16,9 @@ typedef    void (*react_on_inp)(t_client *this, char *spec);
                 stop​ (packets are not sniffed)\n\
                 show [ip] ​(print number of packets received from ip address)\n\
                 select_iface [iface] ​(select interface for sniffing eth0, wlan0, ethN, wlanN...)\n\
-                stat​ [iface]​ (show all collected statistics for particular interface), if iface omitted - for all interfaces.\n"
+                stat​ [iface]​ (show all collected statistics for particular interface), if iface omitted - for all interfaces.\n\
+                die (to kill daemon)\n\
+                exit (to exit from console)\n"
 
 //Very narrowly specialized define
 # define TRASH_IN_LINE  do\

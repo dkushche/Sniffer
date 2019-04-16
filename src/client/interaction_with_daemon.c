@@ -4,13 +4,10 @@ static inline void         con_printf(const char *mess)
     printf("\033[36msniff_client:> \033[0m%s", mess);
 }
 
-static void         send_start( t_client *this, char *spec )
+static inline void         request_no_params( t_client *this, char *spec, unsigned char act)
 {
-    unsigned char   act;
-
     TRASH_IN_LINE
-    con_printf("Sending start request\n");
-    act = START;
+    con_printf("Sending request\n");
     write(this->out_chan, &act, sizeof(unsigned char));
     if (read(this->in_chan, &act, sizeof(unsigned char)) < 0)
         fatal_err_stdin("Fatal error can't read", 0);
@@ -20,20 +17,14 @@ static void         send_start( t_client *this, char *spec )
         con_printf("Error! Check errors.txt\n");
 }
 
+static void         send_start( t_client *this, char *spec )
+{
+    request_no_params(this, spec, START);
+}
+
 static void         send_stop( t_client *this, char *spec )
 {
-    unsigned char act;
-
-    TRASH_IN_LINE
-    con_printf("Sending stop request\n");
-    act = STOP;
-    write(this->out_chan, &act, sizeof(unsigned char));
-    if (read(this->in_chan, &act, sizeof(unsigned char)) < 0)
-        fatal_err_stdin("Fatal error can't read", 0);
-    if (act)
-        con_printf("Success!\n");
-    else
-        con_printf("Error! Check errors.txt\n");
+    request_no_params(this, spec, STOP);
 }
 
 static void         send_show( t_client *this, char *spec )
@@ -41,7 +32,11 @@ static void         send_show( t_client *this, char *spec )
     unsigned long int   packages = 0;
     struct in_addr      addres;
     unsigned char       act;
+    char                *buf = spec;
 
+    spec = strtok(NULL, " ");
+    TRASH_IN_LINE
+    spec = buf;
     con_printf("Sending show request\n");
     act = SHOW;
     write(this->out_chan, &act, sizeof(unsigned char));
@@ -63,7 +58,11 @@ static void         send_select( t_client *this, char * spec )
 {
     unsigned char   device[IFNAMSIZ];
     unsigned char   act;
+    char            *buf = spec;
 
+    spec = strtok(NULL, " ");
+    TRASH_IN_LINE
+    spec = buf;
     con_printf("Sending select request\n");
     act = SELECT;
     write(this->out_chan, &act, sizeof(unsigned char));
@@ -89,21 +88,20 @@ static void         send_stat(t_client *this, char *spec)
 
 static void         send_die(t_client *this, char *spec )
 {
-    TRASH_IN_LINE
-    (void)this;
-    con_printf("404 die\n");
+    request_no_params(this, spec, DIE);
 }
 
 static void         show_help(t_client *this, char *spec)
 {
     TRASH_IN_LINE
     (void)this;
-    con_printf("404 help\n");
+    con_printf(USAGE);
 }
 
 static void         make_exit(t_client *this, char *spec)
 {
     TRASH_IN_LINE
     (void)this;
-    con_printf("404 exit\n");
+    con_printf("Good bye\n");
+    exit(1);
 }

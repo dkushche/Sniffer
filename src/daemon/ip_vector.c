@@ -110,7 +110,7 @@ unsigned long int    searcher(t_ip_vector *this,
     if (status)
         return this->array[now].n_of_pack;
     else
-        return 0;
+        return status;
 }
 
 static void         reallocate(t_ip_vector *this, int status_fd)
