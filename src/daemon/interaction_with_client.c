@@ -5,6 +5,7 @@ static void             react_start( t_sniffer *this )
     unsigned char       stat;
 
     this->is_working = 1;
+    bind_to_device(this, DEFAULT);
     stat = 1;
     write(this->out_chan, &stat, sizeof(unsigned char));
 }
