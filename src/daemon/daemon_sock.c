@@ -65,19 +65,3 @@ static int		    bind_to_device(t_sniffer *this, const char *device)
     make_promiscious(this->sock_raw, this->status, this->now_device);
 	return 0;
 }
-
-/*
-struct ifreq	ifr;
-
-memset(&ifr, 0, sizeof(ifr));
-    memcpy(ifr.ifr_name, device, sizeof(ifr.ifr_name));
-	if (setsockopt(this->sock_raw, SOL_SOCKET, SO_BINDTODEVICE, (void *)&ifr, sizeof(ifr)) != 0)
-	{
-		if (errno == 19) {
-			err_log("No such device", this->status, 0);
-			return -1;
-		}
-		else
-			err_log("Bind to device", this->status, 1);
-	}
-*/

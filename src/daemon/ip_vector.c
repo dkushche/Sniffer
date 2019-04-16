@@ -106,6 +106,8 @@ unsigned long int    searcher(t_ip_vector *this,
     char            status;
     unsigned int    now;
 
+    if (!this->size)
+        return 0;
     status = algorithm(this, who, &now);
     if (status)
         return this->array[now].n_of_pack;
