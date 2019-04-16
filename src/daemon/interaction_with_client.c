@@ -54,5 +54,9 @@ static void             react_stat( t_sniffer *this )
 
 static void             react_die( t_sniffer *this )
 {
-    err_log("Isn't ready", this->status, 1);
+    unsigned char       stat;
+
+    stat = 1;
+    write(this->out_chan, &stat, sizeof(unsigned char));
+    err_log("Oh, time to die", this->status, 1);
 }

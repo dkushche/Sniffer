@@ -89,6 +89,8 @@ static void         send_stat(t_client *this, char *spec)
 static void         send_die(t_client *this, char *spec )
 {
     request_no_params(this, spec, DIE);
+    con_printf("Good bye\n");
+    exit(1);
 }
 
 static void         show_help(t_client *this, char *spec)
