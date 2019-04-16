@@ -22,6 +22,7 @@
 # include <fcntl.h>
 # include <time.h>
 # include <signal.h>
+# include <netpacket/packet.h>
 
 # define DAE_PID ".daemon_pid\0"
 # define FIFO_CL_DAE_CHAN ".conn_layer_cl_dae"

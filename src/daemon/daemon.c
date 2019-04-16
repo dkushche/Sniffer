@@ -16,17 +16,13 @@ void                    init_daemon( void )
 
     daemon.status = open_status();
     free_res();
-	daemon.sock_raw = socket( AF_PACKET , SOCK_RAW , htons(ETH_P_ALL) );
-	if (daemon.sock_raw < 0)
-		err_log("Trouble with creating socket", daemon.status, 1);
+    daemon.sock_raw = -1;
 	daemon.data.array = NULL;
 	if (bind_to_device(&daemon, DEFAULT) < 0)
 		bind_to_device(&daemon, MY);
-    make_promiscious(daemon.sock_raw, daemon.status);
     fifo_chanel((t_abstract *)&daemon);
     chan_interact(&daemon, 0);
     daemon.is_working = 1;
-
     buf = (unsigned char *)malloc(sizeof(unsigned char) * BUFF_SIZE);
     while (1)
     {
@@ -38,8 +34,7 @@ void                    init_daemon( void )
     }
     free(buf);
     destroy_vector(&daemon.data, 1);
-    promiscious_off(daemon.sock_raw, daemon.status);
-    close(daemon.sock_raw);
+    sock_close(&daemon);
     close(daemon.out_chan);
     close(daemon.in_chan);
 }
@@ -72,8 +67,12 @@ static void             sniff_time( t_sniffer *daemon, unsigned char *buf )
     struct sockaddr_in  source;
 
     if (recvfrom(daemon->sock_raw, buf, BUFF_SIZE, 0, &saddr, &saddr_len) < 0)
-        err_log("Reciving error", daemon->status, 1);
-    
+    {
+        if (errno == EAGAIN)
+            return;
+        else
+            err_log("Reciving error", daemon->status, 1);
+    }
     memset(&source, 0, sizeof(source));
     struct iphdr *ip = (struct iphdr*)(buf + sizeof(struct ethhdr));
 

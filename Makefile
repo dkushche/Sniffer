@@ -54,7 +54,7 @@ HEADERS =	$(addprefix $(D_INC), $(HEAD_FILES))
 #--------------COMPILATION------------------------------------------------------
 
 CC = gcc
-CFLAGS = -g -Wall -Werror -Wextra
+CFLAGS = #-g -Wall -Werror -Wextra
 
 INC =	-I $(D_INC) \
 		-I $(D_INC)$(D_DAEMON) \

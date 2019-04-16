@@ -20,8 +20,8 @@ void            err_log( const char *err, int status_fd, char fatal )
     tm_info = localtime(&timer);
 
     strftime(buffer, 26, "%Y-%m-%d %H:%M:%S", tm_info);
-
-    dprintf(status_fd, "%s daemon_error>%s\n", buffer, err);
+    dprintf(status_fd, "%s daemon_error>%s errno : %i\n", buffer, err, errno);
+    errno = 0;
     if (fatal)
 	    exit(1);
 }
