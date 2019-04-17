@@ -37,6 +37,8 @@ static void         send_show( t_client *this, char *spec )
     spec = strtok(NULL, " ");
     TRASH_IN_LINE
     spec = buf;
+    if (!spec || !strlen(spec)) {
+        con_printf("Show need param [ip]\n"); return ; }
     con_printf("Sending show request\n");
     act = SHOW;
     write(this->out_chan, &act, sizeof(unsigned char));
@@ -63,6 +65,8 @@ static void         send_select( t_client *this, char * spec )
     spec = strtok(NULL, " ");
     TRASH_IN_LINE
     spec = buf;
+    if (!spec || !strlen(spec)) {
+        con_printf("Select need param [iface]\n"); return ; }
     con_printf("Sending select request\n");
     act = SELECT;
     write(this->out_chan, &act, sizeof(unsigned char));
@@ -142,6 +146,8 @@ static void         send_stat(t_client *this, char *spec)
     spec = strtok(NULL, " ");
     TRASH_IN_LINE
     spec = buf;
+    if (!spec || !strlen(spec)) {
+        con_printf("Stat need param [iface]\n"); return ; }
     if (!check_stat_arg(spec, &req))
         return ;
     con_printf("Sending stat request\n");
