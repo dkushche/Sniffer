@@ -23,12 +23,14 @@ D_CLIENT = client/
 HEAD_FILES =	main.h \
 				$(D_DAEMON)daemon.h \
 				$(D_DAEMON)ip_vector.h \
-				$(D_CLIENT)client.h
+				$(D_CLIENT)client.h \
+				$(D_DAEMON)device_list.h
 
 C_FILES =		$(D_DAEMON)daemon.c \
 				$(D_DAEMON)ip_vector.c \
 				errors.c \
-				fifo_chanel.c
+				fifo_chanel.c \
+				$(D_DAEMON)device_list.c
 
 #DAEMON-------------------------------------------------------------------------
 
@@ -54,7 +56,7 @@ HEADERS =	$(addprefix $(D_INC), $(HEAD_FILES))
 #--------------COMPILATION------------------------------------------------------
 
 CC = gcc
-CFLAGS = #-g -Wall -Werror -Wextra
+CFLAGS = #-Wall -Werror -Wextra
 
 INC =	-I $(D_INC) \
 		-I $(D_INC)$(D_DAEMON) \
@@ -96,6 +98,7 @@ clean_logs:
 	@rm -rf .*reboot
 	@rm -rf errors.txt
 	@rm -rf .vscode
+	@rm -rf .devices
 	@printf "$(C_CYAN)$(NAME):$(C_GREEN)<TMP was cleaned>\n"
 
 clean:

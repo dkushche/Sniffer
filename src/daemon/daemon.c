@@ -1,5 +1,6 @@
 
 #include "daemon.h"
+#include "device_list.h"
 #include "daemon_filesys.c"
 #include "daemon_sock.c"
 #include "interaction_with_client.c"
@@ -15,9 +16,11 @@ void                    init_daemon( void )
     t_sniffer       daemon;
 
     daemon.status = open_status();
-    free_res();
+    //free_res(); debug
+    daemon.devices = NULL;
     daemon.sock_raw = -1;
 	daemon.data.array = NULL;
+    download_devices(&daemon);
 	if (bind_to_device(&daemon, DEFAULT) < 0)
 		bind_to_device(&daemon, MY);
     fifo_chanel((t_abstract *)&daemon);

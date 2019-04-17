@@ -7,6 +7,8 @@
 
 # define LOGS   "errors.txt"
 
+typedef struct  list_el t_list;
+
 typedef struct      sniffer
 {
     int             out_chan;
@@ -16,7 +18,9 @@ typedef struct      sniffer
     int             file;
     int             status;
     unsigned char   is_working;
-    char            now_device[IFNAMSIZ];    
+    char            now_device[IFNAMSIZ]; 
+    t_list          *devices;
+    int             dev_file;
 }                   t_sniffer;
 
 typedef void (*interact_func)(t_sniffer *this);

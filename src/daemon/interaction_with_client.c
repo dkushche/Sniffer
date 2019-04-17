@@ -50,7 +50,10 @@ static void             react_select( t_sniffer *this )
 
 static void             react_stat( t_sniffer *this )
 {
-    err_log("FUCK OFF", this->status, 1);
+    int                 device;
+
+    read(this->in_chan, &device, sizeof(device));
+    stream_in_chanel(this, device);
 }
 
 static void             react_die( t_sniffer *this )

@@ -53,6 +53,7 @@ static int		    bind_to_device(t_sniffer *this, const char *device)
 		err_log("Trouble with creating socket", this->status, 1);
     if (bind(this->sock_raw, (struct sockaddr*)&iface, sizeof(iface)) < 0)     
 		err_log("Bind to device", this->status, 1);
+    push_in_list(&this->devices, iface.sll_ifindex, this->dev_file, 1);
     int flags = fcntl(this->sock_raw, F_GETFL, 0);
     fcntl(this->sock_raw, F_SETFL, flags | O_NONBLOCK);
     memcpy(this->now_device, device, strlen(device));

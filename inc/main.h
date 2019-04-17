@@ -28,6 +28,7 @@
 # define FIFO_CL_DAE_CHAN ".conn_layer_cl_dae"
 # define FIFO_DAE_CL_CHAN ".conn_layer_dae_cl"
 # define F_PATH "reboot\0"
+# define D_PATH ".devices\0"
 
 # define DEFAULT "enp2s0f2\0" //"eth0\0"
 # define MY   "wlp3s0"

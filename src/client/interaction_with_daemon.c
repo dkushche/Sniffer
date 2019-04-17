@@ -79,11 +79,76 @@ static void         send_select( t_client *this, char * spec )
         con_printf("Error! Check errors.txt\n");
 }
 
+static char         check_stat_arg(char *spec, int *req)
+{
+    if (!strcmp(spec, "-"))
+        *req = 0;
+    else
+    {
+        *req = if_nametoindex(spec);
+        if (*req == 0)
+            {con_printf("Incorrect iface name\n"); return 0; }
+    }
+    return 1;
+}
+
+static char         stat_handshake(t_client *this, int req)
+{
+    unsigned char   act;
+
+    act = STAT;
+    write(this->out_chan, &act, sizeof(unsigned char));
+    write(this->out_chan, &req, sizeof(int));
+    read(this->in_chan, &act, sizeof(unsigned char));
+    if (!act)
+    {
+        con_printf("No statistic on this interface\n");
+        return 0;
+    }
+    else
+        con_printf("Success\n");    
+    return 1;
+}
+
+static void         stat_stream( t_client *this )
+{
+    int                 get_ifc = 0;
+    unsigned int        package[3];
+    char                iface[IF_NAMESIZE];
+
+    read(this->in_chan, &get_ifc, sizeof(int));
+    while(get_ifc)
+    {
+        if_indextoname(get_ifc, iface);
+        printf("*%s*****************************\n", iface);
+        read(this->in_chan, &package, sizeof(package));
+        while (*(unsigned long int *)(package))
+        {
+            struct in_addr      *buf = (struct in_addr *)package; 
+            char *addr = inet_ntoa(*buf);
+            printf("IP : %s ; packages %lu\n", addr, *((unsigned long int *)(package + 1)));
+            read(this->in_chan, &package, sizeof(package));
+        }
+        read(this->in_chan, &get_ifc, sizeof(int));
+    }
+}
+
 static void         send_stat(t_client *this, char *spec)
 {
-    (void)this;
-    (void)spec;
-    con_printf("404 stat\n");
+    char            *buf = spec;
+    int             req;
+    
+
+    spec = strtok(NULL, " ");
+    TRASH_IN_LINE
+    spec = buf;
+    if (!check_stat_arg(spec, &req))
+        return ;
+    con_printf("Sending stat request\n");
+    if (!stat_handshake(this, req))
+        return ;
+    stat_stream(this);
+    printf("-End of output-------------------------\n");
 }
 
 static void         send_die(t_client *this, char *spec )
