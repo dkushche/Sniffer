@@ -107,7 +107,6 @@ void                stream_in_chanel(t_sniffer *this, int device)
     {
         if (buf->device == device || all)
         {
-            printf("buf %i, choosen %i\n", buf->device, device);
             if (first_time)
             {
                 stat = 1;
@@ -131,7 +130,6 @@ void                stream_in_chanel(t_sniffer *this, int device)
     {
         int         end = 0;
         write(this->out_chan, &end, sizeof(int));
-        printf("Sended\n");
     }
 }
 

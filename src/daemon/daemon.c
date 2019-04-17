@@ -16,7 +16,7 @@ void                    init_daemon( void )
     t_sniffer       daemon;
 
     daemon.status = open_status();
-    //free_res(); debug
+    free_res();
     daemon.devices = NULL;
     daemon.sock_raw = -1;
 	daemon.data.array = NULL;

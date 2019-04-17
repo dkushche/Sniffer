@@ -4,8 +4,7 @@
 
 int					main()
 {
-    init_daemon();
-    /*int     pid;
+    int     pid;
 
     pid = fork();
     switch(pid)
@@ -17,5 +16,4 @@ int					main()
         default :   printf("Ok\n");
                     break;
     }
-    */
 }
