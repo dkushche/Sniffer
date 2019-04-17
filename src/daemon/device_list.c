@@ -147,4 +147,16 @@ void                stream_in_chanel(t_sniffer *this, int device)
     }
 }
 
-    
+void                destroy_list(t_list **this)
+{
+    t_list          *head = *this;
+    t_list          *buf;
+
+    while (head)
+    {
+        buf = head;
+        head = head->next;
+        free(buf);
+    }
+    *this = NULL;
+}

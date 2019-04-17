@@ -26,10 +26,14 @@ void                    init_daemon( void )
     fifo_chanel((t_abstract *)&daemon);
     chan_interact(&daemon, 0);
     daemon_loop(&daemon);
+    destroy_list(&daemon.devices); //for beauty too
     destroy_vector(&daemon.data, 1);
     sock_close(&daemon);
     close(daemon.out_chan);
     close(daemon.in_chan);
+    close(daemon.dev_file);
+    close(daemon.status);
+    close(daemon.file);
 }
 
 static void             daemon_loop( t_sniffer *daemon )
@@ -46,7 +50,7 @@ static void             daemon_loop( t_sniffer *daemon )
             read_chanel(daemon);
         }
     }
-    free(buf);
+    free(buf); // for beauty
 }
 
 static void             read_chanel(t_sniffer *this)

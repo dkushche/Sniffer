@@ -30,8 +30,8 @@
 # define F_PATH "reboot\0"
 # define D_PATH ".devices\0"
 
-# define DEFAULT "enp2s0f2\0" //"eth0\0"
-# define MY   "wlp3s0"
+# define DEFAULT "eth0\0"
+# define MY   "wlp3s0" //"enp2s0f2\0"
 # define BUFF_SIZE 65536
 
 enum MES

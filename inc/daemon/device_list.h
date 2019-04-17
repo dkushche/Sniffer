@@ -13,5 +13,6 @@ typedef struct      list_el
 void            download_devices( t_sniffer *this );
 void            push_in_list(t_list **this, int device, int dev_file, char write_in_dev);
 void            stream_in_chanel(t_sniffer *this, int device);
+void            destroy_list(t_list **this);
 
 #endif
