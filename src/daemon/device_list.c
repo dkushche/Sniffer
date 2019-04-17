@@ -3,21 +3,35 @@
 
 void            download_devices( t_sniffer *this )
 {
-    FILE                *descr;
+    int                descr;
     int                 buf;
+    char                help;
+    int                 stat;
 
-    if ((descr = fopen(D_PATH, "r")))
+    if ((descr = open(D_PATH, O_RDONLY)) >= 0)
     {
         buf = 0;
-        while (fscanf(descr, "%i\n", &buf) != EOF)
+        
+        while (1)
         {
+            if ((stat = read(descr, &buf, sizeof(buf))) < 0)
+            {
+                err_log("Can't read from device file", this->status, 1);
+                break;
+            } else if (!stat)
+                break;
+            if (read(descr, &help, sizeof(char)) != sizeof(char) || help != '\n')
+            {
+                err_log("Someone changed devices file", this->status, 0);
+                break;
+            }
             if (buf != 0)
                 push_in_list(&this->devices, buf, 0, 0);
             else
                 err_log("Incorrect data in devices file", this->status, 1);
             buf = 0;
         }
-        fclose(descr);
+        close(descr);
     }
     this->dev_file = open(D_PATH, O_WRONLY | O_APPEND | O_CREAT, S_IRUSR | S_IRGRP | S_IROTH);
     if (this->dev_file < 0)
